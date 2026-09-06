@@ -1,4 +1,4 @@
-use std::io::{self, BufRead};
+use std::{cell::RefCell, io::{self, BufRead}, rc::Rc};
 
 fn parse_two(a:&str,b:&str) -> Result<i32, std::num::ParseIntError> {
     let x = a.parse::<i32>()?;
@@ -8,19 +8,17 @@ fn parse_two(a:&str,b:&str) -> Result<i32, std::num::ParseIntError> {
 }
 
 fn main() -> io::Result<()> {
-    let stdin = io::stdin();
-    let s: Vec<String> = stdin.lock().lines().collect::<Result<_,_>>()?;
+    //let stdin = io::stdin();
+    //let s: Vec<String> = stdin.lock().lines().collect::<Result<_,_>>()?;
 
-    let total = parse_two(&s[0], &s[1])
-      .map_err(|x| "error: invalid input")
-      .map(|x| format!("sum: {}", x).to_string());
+    let counter = Rc::new(RefCell::new(0));
+    let a = Rc::clone(&counter);
+    let b = Rc::clone(&counter);
 
-    let b = match parse_two(&s[0], &s[1]) {
-        Ok(n) => format!("sum: {}", n),
-        Err(e) => "error: invalid input".to_string()
-    };
+    *a.borrow_mut() += 1;
+    *b.borrow_mut() += 1;
 
-    println!("{}", b);
+    println!("{}", counter.borrow());
 
     Ok(())
 }
