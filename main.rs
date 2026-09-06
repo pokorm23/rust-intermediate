@@ -4,11 +4,19 @@ fn append_excl(s: &mut String) {
     s.push('!');
 }
 
-fn main() {
+fn main() -> io::Result<()> {
     let stdin = io::stdin();
-    let mut line = String::new();
-    stdin.lock().read_line(&mut line).unwrap();
-    let mut s = line.trim().to_string();
-    append_excl(&mut s);
-    println!("{}", s);
+    let s: Vec<String> = stdin.lock().lines().collect::<Result<_,_>>()?;
+
+    println!("{}", longer(&s[0], &s[1]));
+
+    Ok(())
+}
+
+fn longer<'a>(a: &'a str, b: &'a str) -> &'a str {
+    if a.len() > b.len() {
+        a
+    } else {
+        b
+    }
 }
