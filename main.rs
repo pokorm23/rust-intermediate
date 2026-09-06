@@ -1,24 +1,24 @@
 use std::{cell::RefCell, io::{self, BufRead}, rc::Rc};
 
-fn parse_two(a:&str,b:&str) -> Result<i32, std::num::ParseIntError> {
-    let x = a.parse::<i32>()?;
-    let y = b.parse::<i32>()?;
-
-    Ok(x + y)
+fn make_counter() -> impl FnMut() -> i32 {
+    let mut count = 0;
+    move || {
+        count += 1;
+        count
+    }
 }
 
 fn main() -> io::Result<()> {
-    //let stdin = io::stdin();
-    //let s: Vec<String> = stdin.lock().lines().collect::<Result<_,_>>()?;
+    let stdin = io::stdin();
+    let s: Vec<String> = stdin.lock().lines().collect::<Result<_,_>>()?;
 
-    let counter = Rc::new(RefCell::new(0));
-    let a = Rc::clone(&counter);
-    let b = Rc::clone(&counter);
+    let n = s[0].split_whitespace().next().unwrap().parse::<usize>().unwrap();
 
-    *a.borrow_mut() += 1;
-    *b.borrow_mut() += 1;
+    let mut c = make_counter();
 
-    println!("{}", counter.borrow());
+    for _ in 0..n {
+        println!("{}", c());
+    }
 
     Ok(())
 }
