@@ -1,24 +1,28 @@
 use std::{cell::RefCell, io::{self, BufRead}, rc::Rc};
 
-fn make_counter() -> impl FnMut() -> i32 {
-    let mut count = 0;
-    move || {
-        count += 1;
-        count
+mod geometry {
+    pub fn circle_area(radius: f64) -> f64 {
+        3.14 * radius.powi(2)
+    }
+
+    pub fn square_area(side: f64) -> f64 {
+        side.powi(2)
     }
 }
 
 fn main() -> io::Result<()> {
     let stdin = io::stdin();
     let s: Vec<String> = stdin.lock().lines().collect::<Result<_,_>>()?;
+    let kind = &s[0];
+    let dim: f64 = s[1].trim().parse().unwrap();
 
-    let n = s[0].split_whitespace().next().unwrap().parse::<usize>().unwrap();
+     let area = if kind.trim() == "circle" {
+         geometry::circle_area(dim)
+    } else {
+         geometry::square_area(dim)
+    };
 
-    let mut c = make_counter();
-
-    for _ in 0..n {
-        println!("{}", c());
-    }
+    println!("{:.2}", area);
 
     Ok(())
 }
