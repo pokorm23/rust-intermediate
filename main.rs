@@ -1,32 +1,26 @@
 use std::io::{self, BufRead};
 
-trait Shape { fn area(&self) -> f64; }
-struct Circle { radius: f64 }
-struct Square { side: f64 }
+fn parse_two(a:&str,b:&str) -> Result<i32, std::num::ParseIntError> {
+    let x = a.parse::<i32>()?;
+    let y = b.parse::<i32>()?;
 
-impl Shape for Circle {
-    fn area(&self) -> f64 {
-        self.radius.powi(2) * 3.14
-    }
-}
-
-impl Shape for Square {
-    fn area(&self) -> f64 {
-        self.side.powi(2)
-    }
+    Ok(x + y)
 }
 
 fn main() -> io::Result<()> {
     let stdin = io::stdin();
     let s: Vec<String> = stdin.lock().lines().collect::<Result<_,_>>()?;
 
-    let total: i32 = s[0].split_whitespace()
-    .map(|x| x.parse::<i32>().unwrap())
-    .filter(|x| *x % 2 == 0)
-    .map(|x| x.pow(2))
-    .sum::<i32>();
+    let total = parse_two(&s[0], &s[1])
+      .map_err(|x| "error: invalid input")
+      .map(|x| format!("sum: {}", x).to_string());
 
-    println!("{}", total);
+    let b = match parse_two(&s[0], &s[1]) {
+        Ok(n) => format!("sum: {}", n),
+        Err(e) => "error: invalid input".to_string()
+    };
+
+    println!("{}", b);
 
     Ok(())
 }
