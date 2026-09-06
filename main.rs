@@ -1,28 +1,22 @@
-use std::{cell::RefCell, io::{self, BufRead}, rc::Rc};
-
-mod geometry {
-    pub fn circle_area(radius: f64) -> f64 {
-        3.14 * radius.powi(2)
-    }
-
-    pub fn square_area(side: f64) -> f64 {
-        side.powi(2)
-    }
-}
+use std::{cell::RefCell, io::{self, BufRead}, rc::Rc, sync::{Arc, Mutex}, thread};
 
 fn main() -> io::Result<()> {
-    let stdin = io::stdin();
-    let s: Vec<String> = stdin.lock().lines().collect::<Result<_,_>>()?;
-    let kind = &s[0];
-    let dim: f64 = s[1].trim().parse().unwrap();
+    let counter = Arc::new(Mutex::new(0));
+    let mut handles = vec![];
 
-     let area = if kind.trim() == "circle" {
-         geometry::circle_area(dim)
-    } else {
-         geometry::square_area(dim)
-    };
+    for _ in 0..4 {
+        let counter = Arc::clone(&counter);
+        handles.push(thread::spawn(move || {
+            let mut v = counter.lock().unwrap();
+            *v+=250;
+        }));
+    }
 
-    println!("{:.2}", area);
+    for h in handles {
+        h.join().unwrap();
+    }
+
+    println!("{}", *counter.lock().unwrap());
 
     Ok(())
 }
