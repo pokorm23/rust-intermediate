@@ -1,22 +1,35 @@
 use std::io::{self, BufRead};
 
-fn append_excl(s: &mut String) { 
-    s.push('!');
+trait Shape { fn area(&self) -> f64; }
+struct Circle { radius: f64 }
+struct Square { side: f64 }
+
+impl Shape for Circle {
+    fn area(&self) -> f64 {
+        self.radius.powi(2) * 3.14
+    }
+}
+
+impl Shape for Square {
+    fn area(&self) -> f64 {
+        self.side.powi(2)
+    }
 }
 
 fn main() -> io::Result<()> {
     let stdin = io::stdin();
     let s: Vec<String> = stdin.lock().lines().collect::<Result<_,_>>()?;
 
-    println!("{}", longer(&s[0], &s[1]));
+    let kind = &s[0];
+    let dim = &s[1].parse::<f64>().unwrap();
+
+    let s: Box<dyn Shape> = if kind == "circle" {
+        Box::new(Circle { radius: *dim })
+    } else {
+        Box::new(Square { side: *dim })
+    };
+
+    println!("{:.2}", s.area());
 
     Ok(())
-}
-
-fn longer<'a>(a: &'a str, b: &'a str) -> &'a str {
-    if a.len() > b.len() {
-        a
-    } else {
-        b
-    }
 }
