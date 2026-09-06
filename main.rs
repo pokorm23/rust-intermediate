@@ -20,16 +20,13 @@ fn main() -> io::Result<()> {
     let stdin = io::stdin();
     let s: Vec<String> = stdin.lock().lines().collect::<Result<_,_>>()?;
 
-    let kind = &s[0];
-    let dim = &s[1].parse::<f64>().unwrap();
+    let total: i32 = s[0].split_whitespace()
+    .map(|x| x.parse::<i32>().unwrap())
+    .filter(|x| *x % 2 == 0)
+    .map(|x| x.pow(2))
+    .sum::<i32>();
 
-    let s: Box<dyn Shape> = if kind == "circle" {
-        Box::new(Circle { radius: *dim })
-    } else {
-        Box::new(Square { side: *dim })
-    };
-
-    println!("{:.2}", s.area());
+    println!("{}", total);
 
     Ok(())
 }
